@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { login } from "../redux/actions/authAction";
 import { Link, useNavigate } from "react-router-dom";
 import { clearError } from "../redux/auth";
-import LoadingSpinner from "./LoadingSpinner";
+import loginGif from "../image/Login.gif";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -19,7 +19,6 @@ const Login = () => {
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
-    // Clear validation error when user starts typing
     if (validationErrors[e.target.name]) {
       setValidationErrors({ ...validationErrors, [e.target.name]: "" });
     }
@@ -59,40 +58,43 @@ const Login = () => {
   }, [isAuthenticated, navigate]);
   
   useEffect(() => {
-    // Clear errors when component unmounts
     return () => {
       dispatch(clearError());
     };
   }, [dispatch]);
 
   if (loading) {
-    return <LoadingSpinner message="Logging you in..." />;
+    return (
+      <div className="loading-container">
+        <img src={loginGif} alt="Logging in..." className="loading-gif" />
+      </div>
+    );
   }
 
   return (
-    <div className="container mt-4" style={{ maxWidth: "400px" }}>
-      <h3 className="mb-3 text-center">Welcome Back</h3>
+    <div className="form-container">
+      <h3 className="form-title auth-title">Welcome Back</h3>
       
       {error && (
-        <div className="alert alert-danger">
+        <div className="error-message">
           {error}
           {error.includes("not found") && (
-            <div className="mt-2">
+            <div className="error-subtext">
               Don't have an account? <Link to="/signup">Sign up here</Link>
             </div>
           )}
         </div>
       )}
 
-      <form className="login-form" onSubmit={loginSubmit}>
-        <div className="mb-3">
+      <form onSubmit={loginSubmit}>
+        <div className="form-group">
           <label htmlFor="email" className="form-label">
             Email Address *
           </label>
           <input
             type="email"
             autoComplete="username"
-            className={`form-control ${validationErrors.email ? 'is-invalid' : ''}`}
+            className="form-input"
             onChange={onChange}
             name="email"
             value={credentials.email}
@@ -100,18 +102,18 @@ const Login = () => {
             placeholder="Enter your email"
           />
           {validationErrors.email && (
-            <div className="invalid-feedback">{validationErrors.email}</div>
+            <div className="form-error">{validationErrors.email}</div>
           )}
         </div>
         
-        <div className="mb-3">
+        <div className="form-group">
           <label htmlFor="password" className="form-label">
             Password *
           </label>
           <input
             type="password"
             autoComplete="current-password"
-            className={`form-control ${validationErrors.password ? 'is-invalid' : ''}`}
+            className="form-input"
             id="password"
             onChange={onChange}
             name="password"
@@ -119,18 +121,23 @@ const Login = () => {
             placeholder="Enter your password"
           />
           {validationErrors.password && (
-            <div className="invalid-feedback">{validationErrors.password}</div>
+            <div className="form-error">{validationErrors.password}</div>
           )}
         </div>
         
-        <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+        <button
+          type="submit"
+          onClick={loginSubmit}
+          className="submit-button full-width"
+          disabled={loading}
+        >
           {loading ? "Logging in..." : "Login"}
         </button>
       </form>
       
-      <div className="text-center mt-3">
-        <p className="text-muted">
-          Don't have an account? <Link to="/signup">Sign up here</Link>
+      <div className="center-text spacing-top">
+        <p className="muted-text">
+          Don't have an account? <Link to="/signup" className="auth-link">Sign up here</Link>
         </p>
       </div>
     </div>

@@ -1,82 +1,180 @@
-import React, { useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { loginSuccess } from "../redux/auth";
-import { logoutUser } from "../redux/actions/authAction";
-import { useDispatch, useSelector } from "react-redux";
-import { getTokenWithExpiry } from "../utils/tokenUtils";
+import React, { useState, useRef, useLayoutEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { logoutUser } from '../redux/actions/authAction';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Navbar = () => {
+  const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(false);
+  const navRef = useRef(null);
+  const cardsRef = useRef([]);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  
-  useEffect(() => {
-    const token = getTokenWithExpiry();
-    if (token) {
-      dispatch(loginSuccess(token));
-    }
-  }, [dispatch]);
-  
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { isDark, toggleTheme } = useTheme();
+
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate('/');
   };
-  
+
+  const calculateHeight = () => {
+    const navEl = navRef.current;
+    if (!navEl) return 260;
+
+    const isMobile = window.matchMedia('(max-width: 768px)').matches;
+    if (isMobile) {
+      const contentEl = navEl.querySelector('.card-nav-content');
+      if (contentEl) {
+        const topBar = 60;
+        const padding = 16;
+        const contentHeight = contentEl.scrollHeight;
+        return topBar + contentHeight + padding;
+      }
+    }
+    return 260;
+  };
+
+  const toggleMenu = () => {
+    const navEl = navRef.current;
+    if (!navEl) return;
+
+    if (!isExpanded) {
+      setIsHamburgerOpen(true);
+      setIsExpanded(true);
+      navEl.style.height = calculateHeight() + 'px';
+      navEl.querySelector('.card-nav-content').style.visibility = 'visible';
+      navEl.querySelector('.card-nav-content').style.pointerEvents = 'auto';
+    } else {
+      setIsHamburgerOpen(false);
+      setIsExpanded(false);
+      navEl.style.height = '60px';
+      navEl.querySelector('.card-nav-content').style.visibility = 'hidden';
+      navEl.querySelector('.card-nav-content').style.pointerEvents = 'none';
+    }
+  };
+
+  const setCardRef = i => el => {
+    if (el) cardsRef.current[i] = el;
+  };
+
+  useLayoutEffect(() => {
+    const navEl = navRef.current;
+    if (navEl) {
+      navEl.style.height = '60px';
+      navEl.style.overflow = 'hidden';
+    }
+  }, []);
+
+  const navItems = [
+    {
+      label: 'Documents',
+      bgColor: '#007bff',
+      textColor: 'white',
+      links: isAuthenticated ? [
+        { label: 'Dashboard', href: '/dashboard' },
+        { label: 'View All', href: '/documents' },
+        { label: 'Upload New', href: '/upload' }
+      ] : []
+    },
+    {
+      label: 'Account',
+      bgColor: '#28a745',
+      textColor: 'white',
+      links: isAuthenticated ? [
+        { label: 'Profile', href: '/profile' },
+        { label: 'Settings', href: '/profile' }
+      ] : [
+        { label: 'Login', href: '/login' },
+        { label: 'Sign Up', href: '/signup' }
+      ]
+    },
+    {
+      label: 'About',
+      bgColor: '#6c757d',
+      textColor: 'white',
+      links: [
+        { label: 'About Us', href: '/about' },
+        { label: 'Contact', href: '/contact' }
+      ]
+    }
+  ];
+
   return (
-    <nav className="navbar navbar-expand-lg navbar-dark bg-primary">
-      <div className="container-fluid">
-        <Link className="navbar-brand fw-bold" to="/">
-          📁 Document Pod
-        </Link>
-        
-        
-        
-          <ul className="navbar-nav me-auto">
-            <li className="nav-item">
-              <Link className="nav-link" to="/">
-                Home
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link className="nav-link" to="/about">
-                About
-              </Link>
-            </li>
-            {isAuthenticated && (
-              <>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/documents">
-                    My Documents
+    <>
+      <div className="card-nav-container">
+        <nav ref={navRef} className={`card-nav ${isExpanded ? 'open' : ''}`}>
+          <div className="card-nav-top">
+            <div
+              className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
+              onClick={toggleMenu}
+              role="button"
+              aria-label={isExpanded ? 'Close menu' : 'Open menu'}
+              tabIndex={0}
+            >
+              <div className="hamburger-line" />
+              <div className="hamburger-line" />
+            </div>
+
+            <div className="logo-container">
+              <Link to="/" style={{ textDecoration: 'none' , color: 'inherit'}}><span className="logo">Document POD</span></Link>
+            </div>
+
+            <div className="nav-top-actions">
+              {isAuthenticated ? (
+                <button onClick={handleLogout} className="card-nav-cta-button">
+                  Logout
+                </button>
+              ) : (
+                <>
+                  <Link to="/login" className="card-nav-cta-button" style={{marginRight: '0.5rem'}}>
+                    Login
                   </Link>
-                </li>
-                <li className="nav-item">
-                  <Link className="nav-link" to="/upload">
-                    Upload
+                  <Link to="/signup" className="card-nav-cta-button">
+                    Get Started
                   </Link>
-                </li>
-              </>
-            )}
-          </ul>
-          
-          <div className="d-flex">
-            {!isAuthenticated ? (
-              <>
-                <Link className="btn btn-outline-light me-2" to="/login">
-                  Login
-                </Link>
-                <Link className="btn btn-light" to="/signup">
-                  Sign Up
-                </Link>
-              </>
-            ) : (
-              <button className="btn btn-outline-light" onClick={handleLogout}>
-                Logout
-              </button>
-            )}
+                </>
+              )}
+            </div>
           </div>
-        
+
+          <div className="card-nav-content" aria-hidden={!isExpanded}>
+            {navItems.slice(0, 3).map((item, idx) => (
+              <div
+                key={`${item.label}-${idx}`}
+                className="nav-card"
+                ref={setCardRef(idx)}
+                style={{ backgroundColor: item.bgColor, color: item.textColor }}
+              >
+                <div className="nav-card-label">{item.label}</div>
+                <div className="nav-card-links">
+                  {item.links?.map((lnk, i) => (
+                    <Link 
+                      key={`${lnk.label}-${i}`} 
+                      className="nav-card-link" 
+                      to={lnk.href}
+                      onClick={() => toggleMenu()}
+                    >
+                      ↗ {lnk.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </nav>
       </div>
-    </nav>
+      
+      <button 
+        className="theme-toggle-corner"
+        onClick={toggleTheme}
+        aria-label="Toggle theme"
+      >
+        {isDark ? '🌙' : '☀️'}
+      </button>
+    </>
   );
 };
 

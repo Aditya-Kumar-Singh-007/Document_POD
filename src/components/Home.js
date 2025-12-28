@@ -1,81 +1,74 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import TextType from './TextType';
 
 const Home = () => {
   const navigate = useNavigate();
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/dashboard');
+    }
+  }, [isAuthenticated, navigate]);
+
   return (
-    <div className="container" style={{paddingTop: '60px', paddingBottom: '60px'}}>
-      <div className="text-center" style={{marginBottom: '60px'}}>
-        <h1 className="text-title" style={{fontSize: '48px', marginBottom: '20px'}}>
-          Document POD
-        </h1>
-        <p className="text-body" style={{fontSize: '20px', color: '#64748B', marginBottom: '40px'}}>
-          Your secure, cloud-based document management solution
-        </p>
+    <div className="home-container">
+      <div>
+        <h1 className="home-title">Welcome to Document POD</h1>
+        <TextType 
+          text={[
+            "Your documents, simplified.",
+            "Smart storage for smart work.", 
+            "From chaos to clarity.",
+            "One place for everything.",
+            "Work faster. Store smarter."
+          ]}
+          as="p"
+          className="home-tagline"
+          typingSpeed={80}
+          pauseDuration={2500}
+          deletingSpeed={40}
+          showCursor={true}
+          cursorCharacter="|"
+        />
+      </div>
+      
+      <div className="home-buttons">
         {!isAuthenticated ? (
-          <div style={{display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap'}}>
-            <button 
-              className="btn btn-primary"
+          <>
+            <button
               onClick={() => navigate('/signup')}
-              style={{padding: '16px 32px', fontSize: '16px'}}
+              className="btn btn-primary"
             >
-              Get Started Free
+              Get Started
             </button>
-            <button 
-              className="btn btn-outline"
+            
+            <button
               onClick={() => navigate('/login')}
-              style={{padding: '16px 32px', fontSize: '16px'}}
+              className="btn btn-secondary"
             >
               Login
             </button>
-          </div>
+          </>
         ) : (
-          <div style={{display: 'flex', gap: '16px', justifyContent: 'center', flexWrap: 'wrap'}}>
-            <button 
-              className="btn btn-primary"
+          <>
+            <button
               onClick={() => navigate('/documents')}
-              style={{padding: '16px 32px', fontSize: '16px'}}
+              className="btn btn-success"
             >
               View Documents
             </button>
-            <button 
-              className="btn btn-secondary"
+            
+            <button
               onClick={() => navigate('/upload')}
-              style={{padding: '16px 32px', fontSize: '16px'}}
+              className="btn btn-primary"
             >
-              Upload Document
+              Add Document
             </button>
-          </div>
+          </>
         )}
-      </div>
-
-      <div className="grid grid-3" style={{marginTop: '80px'}}>
-        <div className="card">
-          <div className="card-body" style={{textAlign: 'center', padding: '40px 24px'}}>
-            <div style={{fontSize: '48px', marginBottom: '20px'}}>📤</div>
-            <h3 className="text-section" style={{marginBottom: '12px'}}>Easy Upload</h3>
-            <p className="text-body">Upload documents in multiple formats with drag-and-drop simplicity</p>
-          </div>
-        </div>
-        
-        <div className="card">
-          <div className="card-body" style={{textAlign: 'center', padding: '40px 24px'}}>
-            <div style={{fontSize: '48px', marginBottom: '20px'}}>🔒</div>
-            <h3 className="text-section" style={{marginBottom: '12px'}}>Secure Storage</h3>
-            <p className="text-body">Your documents are encrypted and stored securely in the cloud</p>
-          </div>
-        </div>
-        
-        <div className="card">
-          <div className="card-body" style={{textAlign: 'center', padding: '40px 24px'}}>
-            <div style={{fontSize: '48px', marginBottom: '20px'}}>🔍</div>
-            <h3 className="text-section" style={{marginBottom: '12px'}}>Smart Organization</h3>
-            <p className="text-body">Find documents quickly with powerful search and categorization</p>
-          </div>
-        </div>
       </div>
     </div>
   );

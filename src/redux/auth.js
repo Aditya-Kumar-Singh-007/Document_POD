@@ -4,6 +4,7 @@ import { getTokenWithExpiry } from "../utils/tokenUtils";
 const initialState = {
   token: getTokenWithExpiry(),
   isAuthenticated: !!getTokenWithExpiry(),
+  user: null,
   error: null,
   loading: false,
 };
@@ -17,7 +18,7 @@ const auth = createSlice({
       state.error = null;
     },
     loginSuccess: (state, action) => {
-      state.token = action.payload;
+      state.token = action.payload.token;
       state.isAuthenticated = true;
       state.loading = false;
       state.error = null;
@@ -31,8 +32,12 @@ const auth = createSlice({
     logout: (state) => {
       state.token = null;
       state.isAuthenticated = false;
+      state.user = null;
       state.error = null;
       state.loading = false;
+    },
+    setUser: (state, action) => {
+      state.user = action.payload;
     },
     clearError: (state) => {
       state.error = null;
@@ -40,5 +45,5 @@ const auth = createSlice({
   },
 });
 
-export const { loginStart, loginSuccess, loginFailure, logout, clearError } = auth.actions;
+export const { loginStart, loginSuccess, loginFailure, logout, setUser, clearError } = auth.actions;
 export default auth.reducer;

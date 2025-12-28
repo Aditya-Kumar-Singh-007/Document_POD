@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback, useMemo } from "react";
 import DocumentItem from "./DocumentItem";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchDocument } from "../redux/actions/documentActions";
 import { useNavigate } from "react-router-dom";
-import LoadingSpinner from "./LoadingSpinner";
 import ErrorAlert from "./ErrorAlert";
+import documentFetchGif from "../image/documentFetch.gif";
+import uploadIcon from "../image/upload.png";
 
 const Document = () => {
   const dispatch = useDispatch();
@@ -13,6 +14,7 @@ const Document = () => {
   const { list, loading, error } = useSelector((state) => state.documents);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterCategory, setFilterCategory] = useState('');
+  const [localDocuments, setLocalDocuments] = useState([]);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -20,38 +22,43 @@ const Document = () => {
     }
   }, [dispatch, isAuthenticated]);
 
-  const filteredDocuments = list.filter(doc => {
-    const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         doc.filename?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = !filterCategory || doc.category === filterCategory;
-    return matchesSearch && matchesCategory;
-  });
+  useEffect(() => {
+    setLocalDocuments(list);
+  }, [list]);
+
+  const handleDocumentDelete = useCallback((docId) => {
+    setLocalDocuments(prev => prev.filter(doc => doc._id !== docId));
+  }, []);
+
+  const filteredDocuments = useMemo(() => {
+    return localDocuments.filter(doc => {
+      const matchesSearch = doc.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           doc.filename?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesCategory = !filterCategory || doc.category === filterCategory;
+      return matchesSearch && matchesCategory;
+    });
+  }, [localDocuments, searchTerm, filterCategory]);
 
   if (!isAuthenticated) {
     return (
-      <div className="container mt-5 text-center">
-        <div className="row justify-content-center">
-          <div className="col-md-6">
-            <div className="card shadow">
-              <div className="card-body">
-                <h3 className="card-title text-muted">📁 Document Pod</h3>
-                <p className="card-text">Please login to access your documents</p>
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => navigate('/login')}
-                >
-                  Login Now
-                </button>
-              </div>
-            </div>
-          </div>
+      <div className="container text-center">
+        <div className="form-container">
+          <h3> Document Pod</h3>
+          <p>Please login to access your documents</p>
+          <button className="btn btn-primary" onClick={() => navigate('/login')}>
+            Login Now
+          </button>
         </div>
       </div>
     );
   }
 
   if (loading) {
-    return <LoadingSpinner message="Loading your documents..." />;
+    return (
+      <div className="loading-container">
+        <img src={documentFetchGif} alt="Loading documents..." className="loading-gif" />
+      </div>
+    );
   }
 
   if (error) {
@@ -65,82 +72,64 @@ const Document = () => {
   }
 
   return (
-    <div className="container mt-4">
-      {/* Header Section */}
-      <div className="row mb-4">
-        <div className="col-md-8">
-          <h1 className="display-6 text-primary">
-            📁 Your Documents
-            <span className="badge bg-secondary ms-3">{list.length}</span>
+    <div className="documents-page">
+      <div className="documents-header">
+        <div className="header-left">
+          <h1 className="documents-title">
+            Your Documents
+            <span className="documents-count">{list.length}</span>
           </h1>
-          <p className="text-muted">Manage and organize your uploaded documents</p>
         </div>
-        <div className="col-md-4 text-end">
-          <button 
-            className="btn btn-primary btn-lg"
-            onClick={() => navigate('/upload')}
-          >
-            ➕ Upload Document
-          </button>
-        </div>
-      </div>
-
-      {/* Search and Filter Section */}
-      <div className="row mb-4">
-        <div className="col-md-6">
-          <div className="input-group">
-            <span className="input-group-text">
-              🔍
-            </span>
+        <div className="header-right">
+          <div className="search-input">
             <input
               type="text"
-              className="form-control"
-              placeholder="Search documents..."
+              className="form-input"
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
-        </div>
-        <div className="col-md-6">
-          <select
-            className="form-select"
-            value={filterCategory}
-            onChange={(e) => setFilterCategory(e.target.value)}
-          >
-            <option value="">All Categories</option>
-            <option value="personal">Personal</option>
-            <option value="work">Work</option>
-            <option value="education">Education</option>
-            <option value="finance">Finance</option>
-            <option value="other">Other</option>
-          </select>
+          <div className="filter-select">
+            <select
+              className="form-select"
+              value={filterCategory}
+              onChange={(e) => setFilterCategory(e.target.value)}
+            >
+              <option value="">All</option>
+              <option value="personal">Personal</option>
+              <option value="work">Work</option>
+              <option value="education">Education</option>
+              <option value="finance">Finance</option>
+              <option value="other">Other</option>
+            </select>
+          </div>
+          <button className="submit-button" onClick={() => navigate('/upload')}>
+            <img src={uploadIcon} alt="Upload" className="upload-icon" />
+            Upload
+          </button>
         </div>
       </div>
 
-      {/* Documents Grid */}
-      <div className="documents">
+      <div>
         {filteredDocuments.length === 0 ? (
-          <div className="text-center py-5">
-            <div className="mb-4">
-              📂
-            </div>
+          <div className="empty-state">
+            <div className="empty-icon"></div>
             {list.length === 0 ? (
               <>
-                <h3 className="text-muted">No documents uploaded yet</h3>
-                <p className="text-muted">Start by uploading your first document</p>
-                <button 
-                  className="btn btn-primary"
-                  onClick={() => navigate('/upload')}
-                >
+                <h3 className="empty-title">No documents uploaded yet</h3>
+                <p className="empty-text">Start by uploading your first document</p>
+                <button className="submit-button" onClick={() => navigate('/upload')}>
+                  <img src={uploadIcon} alt="Upload" className="upload-icon" />
                   Upload Your First Document
                 </button>
               </>
             ) : (
               <>
-                <h3 className="text-muted">No documents match your search</h3>
-                <p className="text-muted">Try adjusting your search terms or filters</p>
+                <h3 className="empty-title">No documents match your search</h3>
+                <p className="empty-text">Try adjusting your search terms or filters</p>
                 <button 
-                  className="btn btn-outline-secondary"
+                  className="submit-button"
                   onClick={() => {
                     setSearchTerm('');
                     setFilterCategory('');
@@ -152,9 +141,13 @@ const Document = () => {
             )}
           </div>
         ) : (
-          <div className="row">
+          <div className="documents-grid">
             {filteredDocuments.map((doc) => (
-              <DocumentItem key={doc._id} document={doc} />
+              <DocumentItem 
+                key={doc._id} 
+                document={doc} 
+                onDelete={handleDocumentDelete}
+              />
             ))}
           </div>
         )}
