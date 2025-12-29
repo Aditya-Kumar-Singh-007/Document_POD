@@ -127,8 +127,7 @@ const Login = () => {
         
         <button
           type="submit"
-          onClick={loginSubmit}
-          className="submit-button full-width"
+          className="full-width"
           disabled={loading}
         >
           {loading ? "Logging in..." : "Login"}

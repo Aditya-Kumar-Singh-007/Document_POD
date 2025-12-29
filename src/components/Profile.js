@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { logout } from '../redux/actions/authAction';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 
 const Profile = () => {
   const { user, isAuthenticated } = useSelector(state => state.auth);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isDark, toggleTheme } = useTheme();
   const [activeTab, setActiveTab] = useState('profile');
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',
@@ -166,10 +168,18 @@ const Profile = () => {
               <h2>Preferences</h2>
               <div className="preference-item">
                 <label>Theme</label>
-                <select className="form-select">
-                  <option>Light</option>
-                  <option>Dark</option>
-                  <option>Auto</option>
+                <select 
+                  className="form-select" 
+                  value={isDark ? 'dark' : 'light'}
+                  onChange={(e) => {
+                    const newTheme = e.target.value;
+                    if ((newTheme === 'dark' && !isDark) || (newTheme === 'light' && isDark)) {
+                      toggleTheme();
+                    }
+                  }}
+                >
+                  <option value="light">Light</option>
+                  <option value="dark">Dark</option>
                 </select>
               </div>
             </div>

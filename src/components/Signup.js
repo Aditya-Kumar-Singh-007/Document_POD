@@ -184,7 +184,7 @@ const Signup = () => {
         
         <button
           type="submit"
-          className="submit-button full-width"
+          className="full-width"
           disabled={loading}
         >
           {loading ? "Creating Account..." : "Sign Up"}

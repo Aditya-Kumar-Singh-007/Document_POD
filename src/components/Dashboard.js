@@ -2,16 +2,22 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { fetchDocument } from '../redux/actions/documentActions';
 import { useNavigate } from 'react-router-dom';
+import { useTheme } from '../contexts/ThemeContext';
 import filesGif from '../image/file.gif';
 import serverGif from '../image/server.gif';
 import viewIcon from '../image/view.png';
+import viewIconDark from '../image/view-dark.png';
 import categoryIcon from '../image/category.png';
+import categoryIconDark from '../image/category-dark.png';
 import settingIcon from '../image/setting.png';
+import settingIconDark from '../image/setting-dark.png';
 import uploadIcon from '../image/upload.png';
+import uploadIconDark from '../image/upload-dark.png';
 
 const Dashboard = () => {
   const { list, loading } = useSelector(state => state.documents);
   const { isAuthenticated, user } = useSelector(state => state.auth);
+  const { isDark } = useTheme();
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -59,7 +65,7 @@ const Dashboard = () => {
         
         <div className="stat-card">
           <div className="stat-icon">
-            <img src={categoryIcon} alt="Categories" className="dashboard-icon" />
+            <img src={isDark ? categoryIconDark : categoryIcon} alt="Categories" className="dashboard-icon" />
           </div>
           <div className="stat-info">
             <h3>{categories.length}</h3>
@@ -79,7 +85,7 @@ const Dashboard = () => {
         
         <div className="stat-card">
           <div className="stat-icon">
-            <img src={viewIcon} alt="Recent" className="dashboard-icon" />
+            <img src={isDark ? viewIconDark : viewIcon} alt="Recent" className="dashboard-icon" />
           </div>
           <div className="stat-info">
             <h3>{recentDocuments.length}</h3>
@@ -98,7 +104,7 @@ const Dashboard = () => {
               {recentDocuments.map(doc => (
                 <div key={doc._id} className="recent-item">
                   <div className="recent-icon">
-                    <img src={viewIcon} alt="Document" className="dashboard-icon" />
+                    <img src={isDark ? viewIconDark : viewIcon} alt="Document" className="dashboard-icon" />
                   </div>
                   <div className="recent-info">
                     <h4>{doc.title || doc.filename}</h4>
@@ -124,7 +130,7 @@ const Dashboard = () => {
           <h2>Quick Actions</h2>
           <div className="action-buttons">
             <button className="action-btn" onClick={() => navigate('/upload')}>
-              <img src={uploadIcon} alt="Upload" className="dashboard-icon" />
+              <img src={isDark ? uploadIconDark : uploadIcon} alt="Upload" className="dashboard-icon" />
               Upload Document
             </button>
             <button className="action-btn" onClick={() => navigate('/documents')}>
@@ -132,7 +138,7 @@ const Dashboard = () => {
               View All Documents
             </button>
             <button className="action-btn" onClick={() => navigate('/profile')}>
-              <img src={settingIcon} alt="Settings" className="dashboard-icon" />
+              <img src={isDark ? settingIconDark : settingIcon} alt="Settings" className="dashboard-icon" />
               Settings
             </button>
           </div>

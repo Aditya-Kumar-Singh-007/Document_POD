@@ -1,10 +1,13 @@
 import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { deleteDocument } from "../redux/actions/documentActions";
+import { useTheme } from '../contexts/ThemeContext';
 import deleteIcon from "../image/delete.png";
+import deleteIconDark from "../image/delete-dark.png";
 
 const DocumentItem = ({ document: doc, onDelete }) => {
   const dispatch = useDispatch();
+  const { isDark } = useTheme();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
@@ -145,7 +148,7 @@ const DocumentItem = ({ document: doc, onDelete }) => {
           className="doc-btn-delete-small"
           title="Delete"
         >
-          <img src={deleteIcon} alt="Delete" className="delete-icon" />
+          <img src={isDark ? deleteIconDark : deleteIcon} alt="Delete" className="delete-icon" />
         </button>
         <span className="doc-date">{formatDate(doc.createdAt)}</span>
       </div>

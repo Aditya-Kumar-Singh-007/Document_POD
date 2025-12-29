@@ -16,11 +16,25 @@ export const ThemeProvider = ({ children }) => {
     return saved ? saved === 'dark' : false;
   });
 
+  // Initialize theme on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('theme');
+    const initialTheme = saved ? saved === 'dark' : false;
+    document.body.classList.remove('light-theme', 'dark-theme');
+    document.body.classList.add(initialTheme ? 'dark-theme' : 'light-theme');
+  }, []);
+
   useEffect(() => {
     localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    // Remove any existing theme classes first
+    document.body.classList.remove('light-theme', 'dark-theme');
+    // Add the current theme class
+    document.body.classList.add(isDark ? 'dark-theme' : 'light-theme');
   }, [isDark]);
 
-  const toggleTheme = () => setIsDark(!isDark);
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+  };
 
   return (
     <ThemeContext.Provider value={{ isDark, toggleTheme }}>

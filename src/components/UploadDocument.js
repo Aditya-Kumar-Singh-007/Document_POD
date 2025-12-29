@@ -134,7 +134,7 @@ const UploadDocument = () => {
 
         <button
           type="submit"
-          className="submit-button full-width"
+          className="full-width"
           disabled={loading}
         >
           {loading ? "Uploading..." : "Upload Document"}
