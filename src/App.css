@@ -697,6 +697,8 @@ body.dark-theme .success-message {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  position: relative;
+  z-index: 10;
 }
 
 .home-title {
