@@ -1,20 +1,34 @@
+/**
+ * Responsive Navigation Component
+ * 
+ * Features:
+ * - Mobile: Unified card with organized sections
+ * - Desktop: Original colored cards layout
+ * - Auto-detection of screen size
+ * - Smooth animations and glass morphism effects
+ */
+
 import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logoutUser } from '../redux/actions/authAction';
 
-
 const Navbar = () => {
+  // Navigation state management
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+  
+  // Refs for DOM manipulation
   const navRef = useRef(null);
   const cardsRef = useRef([]);
   
+  // Redux hooks
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
   
+  // Mobile detection with resize listener
   useEffect(() => {
     const checkMobile = () => {
       setIsMobile(window.innerWidth <= 768);
@@ -24,13 +38,14 @@ const Navbar = () => {
     window.addEventListener('resize', checkMobile);
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
-  
 
+  // Handle user logout
   const handleLogout = () => {
     dispatch(logoutUser());
     navigate('/');
   };
 
+  // Calculate dynamic height for mobile navigation
   const calculateHeight = () => {
     const navEl = navRef.current;
     if (!navEl) return 260;
@@ -48,6 +63,7 @@ const Navbar = () => {
     return 260;
   };
 
+  // Toggle navigation menu visibility
   const toggleMenu = () => {
     const navEl = navRef.current;
     if (!navEl) return;
@@ -67,10 +83,12 @@ const Navbar = () => {
     }
   };
 
+  // Set card reference for animations
   const setCardRef = i => el => {
     if (el) cardsRef.current[i] = el;
   };
 
+  // Initialize navigation height
   useLayoutEffect(() => {
     const navEl = navRef.current;
     if (navEl) {
@@ -79,6 +97,7 @@ const Navbar = () => {
     }
   }, []);
 
+  // Navigation items configuration
   const navItems = [
     {
       label: 'Documents',
@@ -114,97 +133,101 @@ const Navbar = () => {
   ];
 
   return (
-    <>
-      <div className="card-nav-container">
-        <nav ref={navRef} className={`card-nav ${isExpanded ? 'open' : ''}`}>
-          <div className="card-nav-top">
-            <div
-              className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
-              onClick={toggleMenu}
-              role="button"
-              aria-label={isExpanded ? 'Close menu' : 'Open menu'}
-              tabIndex={0}
-            >
-              <div className="hamburger-line" />
-              <div className="hamburger-line" />
-            </div>
-
-            <div className="logo-container">
-              <Link to="/" style={{ textDecoration: 'none' , color: 'inherit'}}><span className="logo">Document POD</span></Link>
-            </div>
-
-            <div className="nav-top-actions">
-              {isAuthenticated ? (
-                <button onClick={handleLogout} className="card-nav-cta-button">
-                  Logout
-                </button>
-              ) : (
-                <>
-                  <Link to="/login" className="card-nav-cta-button" style={{marginRight: '0.5rem'}}>
-                    Login
-                  </Link>
-                  <Link to="/signup" className="card-nav-cta-button">
-                    Get Started
-                  </Link>
-                </>
-              )}
-            </div>
+    <div className="card-nav-container">
+      <nav ref={navRef} className={`card-nav ${isExpanded ? 'open' : ''}`}>
+        {/* Navigation Header */}
+        <div className="card-nav-top">
+          {/* Hamburger Menu */}
+          <div
+            className={`hamburger-menu ${isHamburgerOpen ? 'open' : ''}`}
+            onClick={toggleMenu}
+            role="button"
+            aria-label={isExpanded ? 'Close menu' : 'Open menu'}
+            tabIndex={0}
+          >
+            <div className="hamburger-line" />
+            <div className="hamburger-line" />
           </div>
 
-          <div className="card-nav-content" aria-hidden={!isExpanded}>
-            {isMobile ? (
-              // Mobile unified card
-              <div className="nav-unified-card">
-                {navItems.map((item, idx) => (
-                  <div key={`${item.label}-${idx}`} className="nav-section">
-                    <div className="nav-section-header">{item.label}</div>
-                    <div className="nav-section-links">
-                      {item.links?.map((lnk, i) => (
-                        <Link 
-                          key={`${lnk.label}-${i}`} 
-                          className="nav-section-link" 
-                          to={lnk.href}
-                          onClick={() => toggleMenu()}
-                        >
-                          {lnk.label}
-                        </Link>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
+          {/* Logo */}
+          <div className="logo-container">
+            <Link to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+              <span className="logo">Document POD</span>
+            </Link>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="nav-top-actions">
+            {isAuthenticated ? (
+              <button onClick={handleLogout} className="card-nav-cta-button">
+                Logout
+              </button>
             ) : (
-              // Desktop original cards
-              navItems.slice(0, 3).map((item, idx) => (
-                <div
-                  key={`${item.label}-${idx}`}
-                  className="nav-card"
-                  ref={setCardRef(idx)}
-                  style={{ backgroundColor: item.bgColor, color: item.textColor }}
-                >
-                  <div className="nav-card-label">{item.label}</div>
-                  <div className="nav-card-links">
+              <>
+                <Link to="/login" className="card-nav-cta-button" style={{ marginRight: '0.5rem' }}>
+                  Login
+                </Link>
+                <Link to="/signup" className="card-nav-cta-button">
+                  Get Started
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Navigation Content - Responsive */}
+        <div className="card-nav-content" aria-hidden={!isExpanded}>
+          {isMobile ? (
+            // Mobile: Unified card with sections
+            <div className="nav-unified-card">
+              {navItems.map((item, idx) => (
+                <div key={`${item.label}-${idx}`} className="nav-section">
+                  <div className="nav-section-header">{item.label}</div>
+                  <div className="nav-section-links">
                     {item.links?.map((lnk, i) => (
-                      <Link 
-                        key={`${lnk.label}-${i}`} 
-                        className="nav-card-link" 
+                      <Link
+                        key={`${lnk.label}-${i}`}
+                        className="nav-section-link"
                         to={lnk.href}
                         onClick={() => toggleMenu()}
                       >
-                        ↗ {lnk.label}
+                        {lnk.label}
                       </Link>
                     ))}
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-        </nav>
-      </div>
-      
-      
-    </>
+              ))}
+            </div>
+          ) : (
+            // Desktop: Original colored cards
+            navItems.slice(0, 3).map((item, idx) => (
+              <div
+                key={`${item.label}-${idx}`}
+                className="nav-card"
+                ref={setCardRef(idx)}
+                style={{ backgroundColor: item.bgColor, color: item.textColor }}
+              >
+                <div className="nav-card-label">{item.label}</div>
+                <div className="nav-card-links">
+                  {item.links?.map((lnk, i) => (
+                    <Link
+                      key={`${lnk.label}-${i}`}
+                      className="nav-card-link"
+                      to={lnk.href}
+                      onClick={() => toggleMenu()}
+                    >
+                      ↗ {lnk.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+      </nav>
+    </div>
   );
 };
+
 
 export default Navbar;

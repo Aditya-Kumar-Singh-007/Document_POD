@@ -16,6 +16,7 @@ const Login = () => {
   });
   
   const [validationErrors, setValidationErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
 
   const onChange = (e) => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
@@ -110,16 +111,26 @@ const Login = () => {
           <label htmlFor="password" className="form-label">
             Password *
           </label>
-          <input
-            type="password"
-            autoComplete="current-password"
-            className="form-input"
-            id="password"
-            onChange={onChange}
-            name="password"
-            value={credentials.password}
-            placeholder="Enter your password"
-          />
+          <div className="password-input-container">
+            <input
+              type={showPassword ? "text" : "password"}
+              autoComplete="current-password"
+              className="form-input password-input"
+              id="password"
+              onChange={onChange}
+              name="password"
+              value={credentials.password}
+              placeholder="Enter your password"
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
           {validationErrors.password && (
             <div className="form-error">{validationErrors.password}</div>
           )}

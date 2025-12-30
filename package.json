@@ -1,13 +1,11 @@
 {
-  "name": "document_pod_frontend",
-  "version": "0.1.0",
+  "name": "document-pod",
+  "version": "1.0.0",
+  "description": "A modern, responsive document management system",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@reduxjs/toolkit": "^2.11.2",
-    "@testing-library/dom": "^10.4.1",
-    "@testing-library/jest-dom": "^6.9.1",
-    "@testing-library/react": "^16.3.1",
-    "@testing-library/user-event": "^13.5.0",
     "ogl": "^1.0.11",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
@@ -18,11 +16,18 @@
     "redux-thunk": "^3.1.0",
     "web-vitals": "^2.1.4"
   },
+  "devDependencies": {
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.1",
+    "@testing-library/user-event": "^13.5.0"
+  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "build:netlify": "CI=false npm run build"
   },
   "eslintConfig": {
     "extends": [
@@ -41,5 +46,18 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "keywords": [
+    "document-management",
+    "react",
+    "redux",
+    "responsive",
+    "file-upload",
+    "dashboard"
+  ],
+  "author": "Aditya Kumar Singh",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Aditya-Kumar-Singh-007/Document_POD.git"
   }
 }

@@ -19,6 +19,8 @@ const Signup = () => {
   });
   
   const [validationErrors, setValidationErrors] = useState({});
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const onChange = (e) => {
     setUserInfo({ ...userInfo, [e.target.name]: e.target.value });
@@ -148,16 +150,26 @@ const Signup = () => {
           <label htmlFor="password" className="form-label">
             Password *
           </label>
-          <input
-            type="password"
-            name="password"
-            value={userInfo.password}
-            onChange={onChange}
-            className="form-input"
-            autoComplete="new-password"
-            id="password"
-            placeholder="Create a password"
-          />
+          <div className="password-input-container">
+            <input
+              type={showPassword ? "text" : "password"}
+              name="password"
+              value={userInfo.password}
+              onChange={onChange}
+              className="form-input password-input"
+              autoComplete="new-password"
+              id="password"
+              placeholder="Create a password"
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+              aria-label={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
           {validationErrors.password && (
             <div className="form-error">{validationErrors.password}</div>
           )}
@@ -167,16 +179,26 @@ const Signup = () => {
           <label htmlFor="reEnterPassword" className="form-label">
             Confirm Password *
           </label>
-          <input
-            type="password"
-            onChange={onChange}
-            name="reEnterPassword"
-            value={userInfo.reEnterPassword}
-            autoComplete="new-password"
-            className="form-input"
-            id="reEnterPassword"
-            placeholder="Confirm your password"
-          />
+          <div className="password-input-container">
+            <input
+              type={showConfirmPassword ? "text" : "password"}
+              onChange={onChange}
+              name="reEnterPassword"
+              value={userInfo.reEnterPassword}
+              autoComplete="new-password"
+              className="form-input password-input"
+              id="reEnterPassword"
+              placeholder="Confirm your password"
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              aria-label={showConfirmPassword ? "Hide password" : "Show password"}
+            >
+              {showConfirmPassword ? "🙈" : "👁️"}
+            </button>
+          </div>
           {validationErrors.reEnterPassword && (
             <div className="form-error">{validationErrors.reEnterPassword}</div>
           )}
