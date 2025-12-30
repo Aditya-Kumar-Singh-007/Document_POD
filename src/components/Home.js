@@ -9,7 +9,7 @@ const Home = () => {
 
   return (
     <div className="home-container">
-      <div>
+      <div className='home-title-container'>
         <h1 className="home-title">Welcome to Document POD</h1>
         <TextType 
           text={[

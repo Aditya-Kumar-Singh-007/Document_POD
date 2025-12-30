@@ -25,14 +25,16 @@ function AppContent() {
   return (
     <>
       {/* 🌌 GLOBAL WEBGL BACKGROUND */}
-      <RippleGrid enableRainbow={true}
-    gridColor="#ffffff"
-    rippleIntensity={0.05}
-    gridSize={10}
-    gridThickness={15}
-    mouseInteraction={true}
-    mouseInteractionRadius={1.2}
-    opacity={0.8} />
+      <RippleGrid
+        enableRainbow={true}
+        gridColor="#ffffff"
+        rippleIntensity={0.05}
+        gridSize={10}
+        gridThickness={15}
+        mouseInteraction={true}
+        mouseInteractionRadius={0.8}
+        opacity={1.2}
+      />
 
       {/* FOREGROUND UI */}
       <div className="relative z-20 min-h-screen">
@@ -44,10 +46,38 @@ function AppContent() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
 
-          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/documents" element={<ProtectedRoute><Document /></ProtectedRoute>} />
-          <Route path="/upload" element={<ProtectedRoute><UploadDocument /></ProtectedRoute>} />
-          <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documents"
+            element={
+              <ProtectedRoute>
+                <Document />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/upload"
+            element={
+              <ProtectedRoute>
+                <UploadDocument />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute>
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
 
           <Route path="*" element={<NotFound />} />
         </Routes>
