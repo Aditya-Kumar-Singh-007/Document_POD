@@ -2,7 +2,7 @@ class ApiCache {
   constructor() {
     this.cache = new Map();
     this.timestamps = new Map();
-    this.defaultTTL = 5 * 60 * 1000; // 5 minutes
+    this.defaultTTL = parseInt(process.env.REACT_APP_CACHE_TTL) || 300000; // 5 minutes default
   }
 
   set(key, data, ttl = this.defaultTTL) {

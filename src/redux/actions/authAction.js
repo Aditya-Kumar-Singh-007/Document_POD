@@ -2,7 +2,8 @@ import { loginStart, loginSuccess, loginFailure } from "../auth";
 import { setTokenWithExpiry, removeToken } from "../../utils/tokenUtils";
 import { apiCache } from "../../utils/apiCache";
 
-const BASE_URL = "https://documentpod-backend.onrender.com";
+const BASE_URL = process.env.REACT_APP_API_URL || "https://documentpod-backend.onrender.com";
+const USER_CACHE_TTL = parseInt(process.env.REACT_APP_USER_CACHE_TTL) || 600000; // 10 minutes
 
 export const fetchUser = () => {
   return async (dispatch, getState) => {
@@ -20,7 +21,6 @@ export const fetchUser = () => {
       }
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 8000);
       
       const res = await fetch(`${BASE_URL}/api/auth/fetchuser`, {
         method: "GET",
@@ -30,12 +30,10 @@ export const fetchUser = () => {
         signal: controller.signal
       });
       
-      clearTimeout(timeoutId);
-      
       if (res.ok) {
         const userData = await res.json();
-        // Cache user data for 10 minutes
-        apiCache.set(cacheKey, userData, 10 * 60 * 1000);
+        // Cache user data for configured time
+        apiCache.set(cacheKey, userData, USER_CACHE_TTL);
         dispatch({ type: 'auth/setUser', payload: userData });
       }
     } catch (error) {
@@ -51,7 +49,6 @@ export const login = (credentials) => {
     dispatch(loginStart());
     try {
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
       
       const res = await fetch(
         `${BASE_URL}/api/auth/login`,
@@ -64,8 +61,6 @@ export const login = (credentials) => {
           signal: controller.signal
         }
       );
-
-      clearTimeout(timeoutId);
       const data = await res.json();
       
       if (!res.ok || !data.authToken) {
@@ -79,7 +74,7 @@ export const login = (credentials) => {
       
     } catch (error) {
       if (error.name === 'AbortError') {
-        dispatch(loginFailure("Login timeout. Please try again."));
+        dispatch(loginFailure("Request cancelled. Please try again."));
       } else {
         dispatch(loginFailure("Network error. Please try again."));
       }
@@ -92,7 +87,7 @@ export const signUp = (userInfo) => {
     dispatch(loginStart());
     try {
       const res = await fetch(
-        "https://documentpod-backend.onrender.com/api/auth/createuser",
+        `${BASE_URL}/api/auth/createuser`,
         {
           method: "POST",
           headers: {

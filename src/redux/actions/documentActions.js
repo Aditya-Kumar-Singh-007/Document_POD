@@ -3,7 +3,9 @@ import {fetchStart,fetchSuccess,fetchFailure} from '../document';
 import { uploadSuccess,uploadFailure, uploadStart } from '../upload';
 import { deleteFailure,deleteStart,deleteSuccess } from '../delete';
 import { apiCache } from '../../utils/apiCache';
-const BASE_URL="https://documentpod-backend.onrender.com"
+
+const BASE_URL = process.env.REACT_APP_API_URL || "https://documentpod-backend.onrender.com";
+const DOCUMENT_CACHE_TTL = parseInt(process.env.REACT_APP_DOCUMENT_CACHE_TTL) || 180000; // 3 minutes
 
 //fetching action with caching
 export const fetchDocument=()=>{
@@ -22,7 +24,6 @@ export const fetchDocument=()=>{
             const token= getState().auth.token;
             
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
             
             const res = await fetch(`${BASE_URL}/api/files/getfiles`,{
                 method:"GET",
@@ -32,8 +33,6 @@ export const fetchDocument=()=>{
                 signal: controller.signal
             });
             
-            clearTimeout(timeoutId);
-            
             if (!res.ok) {
                 dispatch(fetchFailure("Failed to load documents"));
                 return;
@@ -42,13 +41,13 @@ export const fetchDocument=()=>{
             const data = await res.json();
             
             // Cache the response
-            apiCache.set(cacheKey, data.files, 3 * 60 * 1000); // 3 minutes cache
+            apiCache.set(cacheKey, data.files, DOCUMENT_CACHE_TTL);
             
             dispatch(fetchSuccess(data.files));
 
         } catch (error) {
             if (error.name === 'AbortError') {
-                dispatch(fetchFailure("Request timeout. Please try again."));
+                dispatch(fetchFailure("Request cancelled. Please try again."));
             } else {
                 dispatch(fetchFailure("Failed to load documents"));
             }
@@ -64,7 +63,6 @@ export const uploadDocument=(formData)=>{
             const token=getState().auth.token;
             
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 30000); // 30s timeout for uploads
             
             const res=await fetch(`${BASE_URL}/api/files/upload`,{
                 method:"POST",
@@ -74,8 +72,6 @@ export const uploadDocument=(formData)=>{
                 body:formData,
                 signal: controller.signal
             });
-            
-            clearTimeout(timeoutId);
             
             const contentType = res.headers.get('content-type');
             let data;
@@ -101,7 +97,7 @@ export const uploadDocument=(formData)=>{
             dispatch(fetchDocument());
         } catch (error) {
             if (error.name === 'AbortError') {
-                dispatch(uploadFailure("Upload timeout. Please try again."));
+                dispatch(uploadFailure("Upload cancelled. Please try again."));
             } else {
                 dispatch(uploadFailure("Network error: " + error.message));
             }
@@ -116,7 +112,6 @@ export const deleteDocument=(fileId)=>{
             const token=getState().auth.token;
             
             const controller = new AbortController();
-            const timeoutId = setTimeout(() => controller.abort(), 10000);
             
             const res=await fetch(`${BASE_URL}/api/files/delete/${fileId}`,{
                 method:"DELETE",
@@ -125,8 +120,6 @@ export const deleteDocument=(fileId)=>{
                 },
                 signal: controller.signal
             });
-            
-            clearTimeout(timeoutId);
             
             const data=await res.json();
             if(!res.ok){
@@ -142,7 +135,7 @@ export const deleteDocument=(fileId)=>{
             return Promise.resolve();
         } catch (error) {
             if (error.name === 'AbortError') {
-                dispatch(deleteFailure("Delete timeout. Please try again."));
+                dispatch(deleteFailure("Delete cancelled. Please try again."));
             } else {
                 dispatch(deleteFailure("Something went wrong"));
             }
