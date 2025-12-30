@@ -15,7 +15,7 @@ A modern, responsive document management system built with React. Upload, organi
 
 ## 🚀 Live Demo
 
-Visit the live application: [Document POD on Netlify](https://your-app-name.netlify.app)
+Visit the live application: [Document POD on Netlify](https://storeforyourdocument.netlify.app/)
 
 ## 🛠️ Tech Stack
 
@@ -207,8 +207,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 👨‍💻 Author
 
 **Aditya Kumar Singh**
-- GitHub: [@Aditya-Kumar-Singh-007](https://github.com/Aditya-Kumar-Singh-007)
-- LinkedIn: [Your LinkedIn Profile](https://linkedin.com/in/your-profile)
+- 📍 Location: Prayagraj, Uttar Pradesh, India
+- 📧 Email: [2604aditya@gmail.com](mailto:2604aditya@gmail.com)
+- 📞 Phone: [+91 9696833917](tel:+919696833917)
+- 🔗 GitHub: [@Aditya-Kumar-Singh-007](https://github.com/Aditya-Kumar-Singh-007)
+- 💼 LinkedIn: [Aditya Kumar Singh](https://www.linkedin.com/in/aditya-kumar-singh2604)
+- 🌐 Portfolio: [iamadityakumarsingh.netlify.app](https://iamadityakumarsingh.netlify.app/)
 
 ## 🙏 Acknowledgments
 
