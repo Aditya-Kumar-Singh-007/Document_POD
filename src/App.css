@@ -1815,6 +1815,73 @@ body.dark-theme .doc-btn-delete-small:hover {
 .mt-3 { margin-top: 1.5rem; }
 
 /* ===== RESPONSIVE STYLES ===== */
+
+/* Mobile Navigation - Unified Card */
+.nav-unified-card {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.nav-section {
+  margin-bottom: 1.5rem;
+}
+
+.nav-section:last-child {
+  margin-bottom: 0;
+}
+
+.nav-section-header {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+body.dark-theme .nav-section-header {
+  color: #ffffff;
+}
+
+.nav-section-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.nav-section-link {
+  padding: 0.75rem 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  text-decoration: none;
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  text-align: center;
+}
+
+.nav-section-link:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+body.dark-theme .nav-section-link {
+  color: #e5e7eb;
+  background: rgba(31, 41, 55, 0.3);
+  border-color: rgba(75, 85, 99, 0.3);
+}
+
+body.dark-theme .nav-section-link:hover {
+  background: rgba(31, 41, 55, 0.5);
+}
+
 @media (max-width: 768px) {
   .card-nav-container {
     width: 90%;
@@ -1869,7 +1936,10 @@ body.dark-theme .doc-btn-delete-small:hover {
   }
 
   .home-title {
-    font-size: 2rem;
+    font-size: 1rem;
+  }
+  .home-tagline {
+    font-size: 1rem;
   }
 
   .home-buttons {

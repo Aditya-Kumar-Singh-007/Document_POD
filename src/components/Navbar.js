@@ -1,19 +1,30 @@
-import React, { useState, useRef, useLayoutEffect } from 'react';
+import React, { useState, useRef, useLayoutEffect, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { logoutUser } from '../redux/actions/authAction';
-import { useTheme } from '../contexts/ThemeContext';
+
 
 const Navbar = () => {
   const [isHamburgerOpen, setIsHamburgerOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const navRef = useRef(null);
   const cardsRef = useRef([]);
   
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { isAuthenticated } = useSelector((state) => state.auth);
-  const { isDark, toggleTheme } = useTheme();
+  
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+  
 
   const handleLogout = () => {
     dispatch(logoutUser());
@@ -141,39 +152,57 @@ const Navbar = () => {
           </div>
 
           <div className="card-nav-content" aria-hidden={!isExpanded}>
-            {navItems.slice(0, 3).map((item, idx) => (
-              <div
-                key={`${item.label}-${idx}`}
-                className="nav-card"
-                ref={setCardRef(idx)}
-                style={{ backgroundColor: item.bgColor, color: item.textColor }}
-              >
-                <div className="nav-card-label">{item.label}</div>
-                <div className="nav-card-links">
-                  {item.links?.map((lnk, i) => (
-                    <Link 
-                      key={`${lnk.label}-${i}`} 
-                      className="nav-card-link" 
-                      to={lnk.href}
-                      onClick={() => toggleMenu()}
-                    >
-                      ↗ {lnk.label}
-                    </Link>
-                  ))}
-                </div>
+            {isMobile ? (
+              // Mobile unified card
+              <div className="nav-unified-card">
+                {navItems.map((item, idx) => (
+                  <div key={`${item.label}-${idx}`} className="nav-section">
+                    <div className="nav-section-header">{item.label}</div>
+                    <div className="nav-section-links">
+                      {item.links?.map((lnk, i) => (
+                        <Link 
+                          key={`${lnk.label}-${i}`} 
+                          className="nav-section-link" 
+                          to={lnk.href}
+                          onClick={() => toggleMenu()}
+                        >
+                          {lnk.label}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : (
+              // Desktop original cards
+              navItems.slice(0, 3).map((item, idx) => (
+                <div
+                  key={`${item.label}-${idx}`}
+                  className="nav-card"
+                  ref={setCardRef(idx)}
+                  style={{ backgroundColor: item.bgColor, color: item.textColor }}
+                >
+                  <div className="nav-card-label">{item.label}</div>
+                  <div className="nav-card-links">
+                    {item.links?.map((lnk, i) => (
+                      <Link 
+                        key={`${lnk.label}-${i}`} 
+                        className="nav-card-link" 
+                        to={lnk.href}
+                        onClick={() => toggleMenu()}
+                      >
+                        ↗ {lnk.label}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </nav>
       </div>
       
-      <button 
-        className="theme-toggle-corner"
-        onClick={toggleTheme}
-        aria-label="Toggle theme"
-      >
-        {isDark ? '🌙' : '☀️'}
-      </button>
+      
     </>
   );
 };
